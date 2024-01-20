@@ -1,4 +1,4 @@
-from models import db, User, Token, Alert, Trade, Wallet, Transaction
+from models import db, User, Token, Alert, Trade, Wallet, Transaction, Order
 
 def seed_data():
     try:
@@ -20,6 +20,9 @@ def seed_data():
 
         transaction1 = Transaction(wallet_id=1, amount=100000, transaction_type='deposit')  # Initial deposit
         db.session.add(transaction1)
+
+        order1 = Order(user_id=1, token_id=1, order_type='market', status='open', price=50000, quantity=0.01)  # market order to buy 0.01 BTC at $50,000
+        db.session.add(order1)
 
         db.session.commit()
     except Exception as e:
