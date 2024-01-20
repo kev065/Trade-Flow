@@ -1,4 +1,4 @@
-from models import db, User, Token, Alert, Trade
+from models import db, User, Token, Alert, Trade, Wallet, Transaction
 
 def seed_data():
     try:
@@ -14,6 +14,12 @@ def seed_data():
 
         trade1 = Trade(user_id=1, token_id=1, amount=0.01, price=50000, time='2024-01-01 00:00:00', type='spot', status='open', pnl=0)
         db.session.add(trade1)
+
+        wallet1 = Wallet(user_id=1, balance=100000) 
+        db.session.add(wallet1)
+
+        transaction1 = Transaction(wallet_id=1, amount=100000, transaction_type='deposit')  # Initial deposit
+        db.session.add(transaction1)
 
         db.session.commit()
     except Exception as e:
