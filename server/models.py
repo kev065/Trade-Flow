@@ -2,6 +2,12 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+# Association table for many-to-many relationship between User and Crypto Token
+watchlist = db.Table('watchlists',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('token_id', db.Integer, db.ForeignKey('tokens.id'))
+)
+
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -10,6 +16,14 @@ class User(db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
 
+    # Watchlist
+    watchlist = db.relationship('Token', secondary=watchlist, backref=db.backref('users', lazy='dynamic'))
+
+    # Alerts
+    alerts = db.relationship('Alert', backref='user', lazy='dynamic')
+
+    # Trades
+    trades = db.relationship('Trade', backref='user', lazy='dynamic')
 
 class Token(db.Model):
     __tablename__ = 'tokens'
@@ -17,4 +31,30 @@ class Token(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
     symbol = db.Column(db.String(10), index=True, unique=True)
+
+class Alert(db.Model):
+    __tablename__ = 'alerts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    token_id = db.Column(db.Integer, db.ForeignKey('tokens.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    price = db.Column(db.Float)
+    direction = db.Column(db.String(10))  # increase or decrease
+
+    token = db.relationship('Token', backref='alerts')
+
+class Trade(db.Model):
+    __tablename__ = 'trades'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    token_id = db.Column(db.Integer, db.ForeignKey('tokens.id'))
+    amount = db.Column(db.Float)
+    price = db.Column(db.Float)
+    time = db.Column(db.DateTime)
+    type = db.Column(db.String(10))  # spot or futures
+    status = db.Column(db.String(10))  # open or closed
+    pnl = db.Column(db.Float)  # profit and loss
+
+    token = db.relationship('Token', backref='trades')
 
