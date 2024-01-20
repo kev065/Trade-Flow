@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, abort
-from models import db, User, Token, Alert, Trade, Wallet, Transaction, Order
+from models import db, User, Token, Alert, Trade, Wallet, Transaction
 
 def create_app():
     app = Flask(__name__)
@@ -15,11 +15,13 @@ def create_app():
         data = request.get_json()
         if not data:
             abort(400, description="No input data provided")
-        required_fields = ['user_id', 'token_id', 'order_type', 'price', 'quantity']
+        required_fields = ['user_id', 'token_id', 'order_type', 'quantity', 'futures']
         if not all(field in data for field in required_fields):
             abort(400, description="Missing required field(s)")
-        order = Order(user_id=data['user_id'], token_id=data['token_id'], order_type=data['order_type'], status='open', price=data['price'], quantity=data['quantity'])
-        db.session.add(order)
+        service = BinanceService()
+        price = service.get_price(data['token_id'])  # Get the current price of the token
+        trade = Trade(user_id=data['user_id'], token_id=data['token_id'], amount=data['quantity'], price=price, type=data['order_type'], status='open', pnl=0, futures=data['futures'])
+        db.session.add(trade)
         db.session.commit()
         return jsonify(message='Order placed successfully'), 201
 
@@ -75,3 +77,4 @@ if __name__ == '__main__':
         from seed import seed_data
         seed_data()
     app.run(debug=True)
+
