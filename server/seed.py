@@ -24,6 +24,9 @@ def seed_data():
         order1 = Order(user_id=1, token_id=1, order_type='market', status='open', price=50000, quantity=0.01)  # market order to buy 0.01 BTC at $50,000
         db.session.add(order1)
 
+        order2 = Order(user_id=1, token_id=1, order_type='limit', status='open', price=60000, quantity=0.01)  # limit order to buy 0.01 BTC at $60,000
+        db.session.add(order2)
+
         db.session.commit()
     except Exception as e:
         print(f"An error occurred while seeding data: {e}")
