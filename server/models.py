@@ -61,6 +61,20 @@ class Trade(db.Model):
 
     token = db.relationship('Token', backref='trades')
 
+class Order(db.Model):
+    __tablename__ = 'orders'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    token_id = db.Column(db.Integer, db.ForeignKey('tokens.id'))
+    order_type = db.Column(db.String(10))  # market, limit, stop limit, stop market, trailing stop, post only, scaled order
+    status = db.Column(db.String(10))  # open, filled, cancelled
+    price = db.Column(db.Float)
+    quantity = db.Column(db.Float)
+
+    user = db.relationship('User', backref='orders')
+    token = db.relationship('Token', backref='orders')
+
 class Wallet(db.Model):
     __tablename__ = 'wallets'
 
