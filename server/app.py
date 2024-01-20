@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from models import db, User, Token, Alert, Trade
 
 def create_app():
@@ -10,6 +10,14 @@ def create_app():
     def index():
         return "Hello, World!"
 
+    @app.errorhandler(404)
+    def page_not_found(e):
+        return jsonify(error=str(e)), 404
+
+    @app.errorhandler(500)
+    def internal_server_error(e):
+        return jsonify(error=str(e)), 500
+
     return app
 
 if __name__ == '__main__':
@@ -19,3 +27,4 @@ if __name__ == '__main__':
         from seed import seed_data
         seed_data()
     app.run(debug=True)
+
