@@ -23,6 +23,17 @@ def create_app():
         db.session.commit()
         return jsonify(message='Order placed successfully'), 201
 
+    @app.route('/order/<int:order_id>', methods=['DELETE'])
+    def cancel_order(order_id):
+        order = Order.query.get(order_id)
+        if order is None:
+            abort(404, description="Order not found")
+        if order.status != 'open':
+            abort(400, description="Cannot cancel a non-open order")
+        order.status = 'cancelled'
+        db.session.commit()
+        return jsonify(message='Order cancelled successfully'), 200
+
     @app.route('/wallet/<int:user_id>', methods=['GET'])
     def get_wallet(user_id):
         wallet = Wallet.query.filter_by(user_id=user_id).first()
@@ -64,4 +75,3 @@ if __name__ == '__main__':
         from seed import seed_data
         seed_data()
     app.run(debug=True)
-
