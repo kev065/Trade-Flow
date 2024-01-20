@@ -25,6 +25,9 @@ class User(db.Model):
     # Trades
     trades = db.relationship('Trade', backref='user', lazy='dynamic')
 
+    # Wallet
+    wallet = db.relationship('Wallet', backref='user', uselist=False)
+
 class Token(db.Model):
     __tablename__ = 'tokens'
 
@@ -57,4 +60,22 @@ class Trade(db.Model):
     pnl = db.Column(db.Float)  # profit and loss
 
     token = db.relationship('Token', backref='trades')
+
+class Wallet(db.Model):
+    __tablename__ = 'wallets'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    balance = db.Column(db.Float)
+
+class Transaction(db.Model):
+    __tablename__ = 'transactions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    wallet_id = db.Column(db.Integer, db.ForeignKey('wallets.id'))
+    amount = db.Column(db.Float)
+    transaction_type = db.Column(db.String(10))  # deposit or withdrawal
+
+    wallet = db.relationship('Wallet', backref='transactions')
+
 
