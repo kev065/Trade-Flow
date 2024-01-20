@@ -1,5 +1,5 @@
 from flask import Flask
-from models import db, User, Token
+from models import db, User, Token, Alert, Trade
 
 def create_app():
     app = Flask(__name__)
