@@ -1,4 +1,4 @@
-from models import db, User, Token, Alert, Trade, Wallet, Transaction, Order
+from models import db, User, Token, Alert, Trade, Wallet, Transaction
 
 def seed_data():
     try:
@@ -12,20 +12,17 @@ def seed_data():
         alert1 = Alert(user_id=1, token_id=1, price=50000, direction='increase')
         db.session.add(alert1)
 
-        trade1 = Trade(user_id=1, token_id=1, amount=0.01, price=50000, time='2024-01-01 00:00:00', type='spot', status='open', pnl=0)
+        trade1 = Trade(user_id=1, token_id=1, amount=0.01, price=50000, time='2024-01-01 00:00:00', type='buy', status='open', pnl=0, futures=False, order_type='market')  # spot market order to buy 0.01 BTC at $50,000
         db.session.add(trade1)
+
+        trade2 = Trade(user_id=1, token_id=1, amount=0.01, price=60000, time='2024-01-01 00:00:00', type='buy', status='open', pnl=0, futures=True, order_type='limit')  # futures limit order to buy 0.01 BTC at $60,000
+        db.session.add(trade2)
 
         wallet1 = Wallet(user_id=1, balance=100000) 
         db.session.add(wallet1)
 
         transaction1 = Transaction(wallet_id=1, amount=100000, transaction_type='deposit')  # Initial deposit
         db.session.add(transaction1)
-
-        order1 = Order(user_id=1, token_id=1, order_type='market', status='open', price=50000, quantity=0.01)  # market order to buy 0.01 BTC at $50,000
-        db.session.add(order1)
-
-        order2 = Order(user_id=1, token_id=1, order_type='limit', status='open', price=60000, quantity=0.01)  # limit order to buy 0.01 BTC at $60,000
-        db.session.add(order2)
 
         db.session.commit()
     except Exception as e:
