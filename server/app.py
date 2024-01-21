@@ -3,6 +3,7 @@ from models import db, ma, User, Token, Alert, Trade, Wallet, Transaction, UserS
 from flask_migrate import Migrate
 from services import BinanceService
 
+
 def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -78,8 +79,9 @@ def create_app():
 
     return app
 
+app = create_app()
+
 if __name__ == '__main__':
-    app = create_app()
     with app.app_context():
         db.create_all()
         from seed import seed_data
