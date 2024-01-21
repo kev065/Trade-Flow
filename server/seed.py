@@ -1,5 +1,6 @@
 from models import db, User, Token, Alert, Trade, Wallet, Transaction
 from datetime import datetime
+from services import BinanceService
 from app import app
 
 def seed_data():
@@ -39,6 +40,14 @@ def seed_data():
         if not transaction1:
             transaction1 = Transaction(wallet_id=1, amount=100000, transaction_type='deposit')  # Initial deposit
             db.session.add(transaction1)
+        
+        service = BinanceService()
+        price = service.get_price('BTCUSDT')
+        token = Token.query.filter_by(symbol='BTCUSDT').first()
+        if token:
+            price_entry = Price(token_id=token.id, price=price)
+            db.session.add(price_entry)
+
 
         db.session.commit()
         print("Data seeding successful!")
