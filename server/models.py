@@ -1,6 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 
 db = SQLAlchemy()
+ma = Marshmallow()
 
 # Association table for many-to-many relationship between User and Crypto Token
 watchlist = db.Table('watchlists',
@@ -81,4 +83,38 @@ class Transaction(db.Model):
 
     wallet = db.relationship('Wallet', backref='transactions')
 
+class UserSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = User
+        include_relationships = True
+        load_instance = True
 
+class TokenSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Token
+        include_relationships = True
+        load_instance = True
+
+class AlertSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Alert
+        include_relationships = True
+        load_instance = True
+
+class TradeSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Trade
+        include_relationships = True
+        load_instance = True
+
+class WalletSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Wallet
+        include_relationships = True
+        load_instance = True
+
+class TransactionSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Transaction
+        include_relationships = True
+        load_instance = True
