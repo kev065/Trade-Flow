@@ -9,9 +9,9 @@ def seed_data():
             user1 = User(username='user1', email='user1@example.com')
             db.session.add(user1)
 
-        token1 = Token.query.filter_by(name='Bitcoin', symbol='BTC').first()
+        token1 = Token.query.filter_by(name='Bitcoin', symbol='BTCUSDT').first()
         if not token1:
-            token1 = Token(name='Bitcoin', symbol='BTC')
+            token1 = Token(name='Bitcoin', symbol='BTCUSDT')
             db.session.add(token1)
 
         alert1 = Alert.query.filter_by(user_id=1, token_id=1, price=50000, direction='increase').first()
