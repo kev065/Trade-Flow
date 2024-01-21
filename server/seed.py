@@ -1,4 +1,4 @@
-from models import db, User, Token, Alert, Trade, Wallet, Transaction
+from models import db, User, Token, Alert, Trade, Wallet, Transaction, Price
 from datetime import datetime
 from services import BinanceService
 from app import app

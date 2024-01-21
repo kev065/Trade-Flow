@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 from flask_marshmallow import Marshmallow
+from datetime import datetime
 
 db = SQLAlchemy()
 ma = Marshmallow()
