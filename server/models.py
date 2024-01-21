@@ -88,33 +88,39 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         model = User
         include_relationships = True
         load_instance = True
+        include_fk = True
 
 class TokenSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Token
         include_relationships = True
         load_instance = True
+        include_fk = True
 
 class AlertSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Alert
         include_relationships = True
         load_instance = True
+        include_fk = True
 
 class TradeSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Trade
         include_relationships = True
         load_instance = True
+        include_fk = True
 
 class WalletSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Wallet
         include_relationships = True
         load_instance = True
+        include_fk = True
 
 class TransactionSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Transaction
         include_relationships = True
         load_instance = True
+        include_fk = True
