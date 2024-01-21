@@ -1,4 +1,5 @@
 from models import db, User, Token, Alert, Trade, Wallet, Transaction
+from datetime import datetime
 from app import app
 
 def seed_data():
@@ -19,14 +20,14 @@ def seed_data():
             alert1 = Alert(user_id=1, token_id=1, price=50000, direction='increase')
             db.session.add(alert1)
 
-        trade1 = Trade.query.filter_by(user_id=1, token_id=1, amount=0.01, price=50000, time='2024-01-01 00:00:00', type='buy', status='open', pnl=0, futures=False, order_type='market').first()  # spot market order to buy 0.01 BTC at $50,000
+        trade1 = Trade.query.filter_by(user_id=1, token_id=1, amount=0.01, price=50000, time=datetime.strptime('2024-01-01 00:00:00', '%Y-%m-%d %H:%M:%S'), type='buy', status='open', pnl=0, futures=False, order_type='market').first()  # spot market order to buy 0.01 BTC at $50,000
         if not trade1:
-            trade1 = Trade(user_id=1, token_id=1, amount=0.01, price=50000, time='2024-01-01 00:00:00', type='buy', status='open', pnl=0, futures=False, order_type='market')  # spot market order to buy 0.01 BTC at $50,000
+            trade1 = Trade(user_id=1, token_id=1, amount=0.01, price=50000, time=datetime.strptime('2024-01-01 00:00:00', '%Y-%m-%d %H:%M:%S'), type='buy', status='open', pnl=0, futures=False, order_type='market')  # spot market order to buy 0.01 BTC at $50,000
             db.session.add(trade1)
 
-        trade2 = Trade.query.filter_by(user_id=1, token_id=1, amount=0.01, price=60000, time='2024-01-01 00:00:00', type='buy', status='open', pnl=0, futures=True, order_type='limit').first()  # futures limit order to buy 0.01 BTC at $60,000
+        trade2 = Trade.query.filter_by(user_id=1, token_id=1, amount=0.01, price=60000, time=datetime.strptime('2024-01-01 00:00:00', '%Y-%m-%d %H:%M:%S'), type='buy', status='open', pnl=0, futures=True, order_type='limit').first()  # futures limit order to buy 0.01 BTC at $60,000
         if not trade2:
-            trade2 = Trade(user_id=1, token_id=1, amount=0.01, price=60000, time='2024-01-01 00:00:00', type='buy', status='open', pnl=0, futures=True, order_type='limit')  # futures limit order to buy 0.01 BTC at $60,000
+            trade2 = Trade(user_id=1, token_id=1, amount=0.01, price=60000, time=datetime.strptime('2024-01-01 00:00:00', '%Y-%m-%d %H:%M:%S'), type='buy', status='open', pnl=0, futures=True, order_type='limit')  # futures limit order to buy 0.01 BTC at $60,000
             db.session.add(trade2)
 
         wallet1 = Wallet.query.filter_by(user_id=1, balance=100000).first()
@@ -44,3 +45,6 @@ def seed_data():
         print(f"An error occurred while seeding data: {e}")
         db.session.rollback()
 
+if __name__ == "__main__":
+    with app.app_context():
+        seed_data()
