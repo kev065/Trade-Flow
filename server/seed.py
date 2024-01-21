@@ -41,6 +41,7 @@ def seed_data():
             db.session.add(transaction1)
 
         db.session.commit()
+        print("Data seeding successful!")
     except Exception as e:
         print(f"An error occurred while seeding data: {e}")
         db.session.rollback()
