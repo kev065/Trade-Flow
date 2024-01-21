@@ -1,10 +1,14 @@
 from flask import Flask, jsonify, request, abort
-from models import db, User, Token, Alert, Trade, Wallet, Transaction
+from models import db, ma, User, Token, Alert, Trade, Wallet, Transaction, UserSchema, TokenSchema, AlertSchema, TradeSchema, WalletSchema, TransactionSchema 
+from flask_migrate import Migrate
+from services import BinanceService
 
 def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
     db.init_app(app)
+    ma.init_app(app) 
+    migrate = Migrate(app, db)
 
     @app.route('/')
     def index():
@@ -23,25 +27,28 @@ def create_app():
         trade = Trade(user_id=data['user_id'], token_id=data['token_id'], amount=data['quantity'], price=price, type=data['order_type'], status='open', pnl=0, futures=data['futures'])
         db.session.add(trade)
         db.session.commit()
-        return jsonify(message='Order placed successfully'), 201
+        trade_schema = TradeSchema()
+        return jsonify(trade_schema.dump(trade)), 201
 
     @app.route('/order/<int:order_id>', methods=['DELETE'])
     def cancel_order(order_id):
-        order = Order.query.get(order_id)
+        trade = Trade.query.get(order_id)
         if order is None:
-            abort(404, description="Order not found")
-        if order.status != 'open':
-            abort(400, description="Cannot cancel a non-open order")
-        order.status = 'cancelled'
+            abort(404, description="Trade not found")
+        if trade.status != 'open':
+            abort(400, description="Cannot cancel a non-open trade")
+        trade.status = 'cancelled'
         db.session.commit()
-        return jsonify(message='Order cancelled successfully'), 200
+        trade_schema = TradeSchema()
+        return jsonify(trade_schema.dump(trade)), 200
 
     @app.route('/wallet/<int:user_id>', methods=['GET'])
     def get_wallet(user_id):
         wallet = Wallet.query.filter_by(user_id=user_id).first()
         if wallet is None:
             abort(404, description="Wallet not found")
-        return jsonify(balance=wallet.balance), 200
+        wallet_schema = WalletSchema()
+        return jsonify(wallet_schema.dump(wallet)), 200
 
     @app.route('/transaction', methods=['POST'])
     def make_transaction():
@@ -54,7 +61,8 @@ def create_app():
         transaction = Transaction(wallet_id=data['wallet_id'], amount=data['amount'], transaction_type=data['transaction_type'])
         db.session.add(transaction)
         db.session.commit()
-        return jsonify(message='Transaction made successfully'), 201
+        transaction_schema = TransactionSchema()
+        return jsonify(transaction_schema.dump(transaction)), 201
 
     @app.errorhandler(400)
     def bad_request(e):
@@ -77,4 +85,5 @@ if __name__ == '__main__':
         from seed import seed_data
         seed_data()
     app.run(debug=True)
+
 
