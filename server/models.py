@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import validates
 from flask_marshmallow import Marshmallow
 
 db = SQLAlchemy()
@@ -65,6 +66,20 @@ class Trade(db.Model):
 
     token = db.relationship('Token', backref='trades')
 
+    @validates('type')
+    def validate_type(self, key, type):
+        assert type in ['buy', 'sell']
+        return type
+
+    @validates('status')
+    def validate_status(self, key, status):
+        assert status in ['open', 'closed']
+        return status
+
+    @validates('order_type')
+    def validate_order_type(self, key, order_type):
+        assert order_type in ['market', 'limit', 'stop limit', 'stop market', 'trailing stop', 'post only', 'scaled order']
+        return order_type
 
 class Wallet(db.Model):
     __tablename__ = 'wallets'
@@ -82,6 +97,8 @@ class Transaction(db.Model):
     transaction_type = db.Column(db.String(10))  # deposit or withdrawal
 
     wallet = db.relationship('Wallet', backref='transactions')
+
+# Marshmallow schemas
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -124,3 +141,4 @@ class TransactionSchema(ma.SQLAlchemyAutoSchema):
         include_relationships = True
         load_instance = True
         include_fk = True
+
