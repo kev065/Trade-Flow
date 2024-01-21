@@ -98,6 +98,16 @@ class Transaction(db.Model):
 
     wallet = db.relationship('Wallet', backref='transactions')
 
+class Price(db.Model):
+    __tablename__ = 'prices'
+
+    id = db.Column(db.Integer, primary_key=True)
+    token_id = db.Column(db.Integer, db.ForeignKey('tokens.id'))
+    price = db.Column(db.Float)
+    time = db.Column(db.DateTime, default=datetime.utcnow)
+
+    token = db.relationship('Token', backref='prices')
+
 # Marshmallow schemas
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
@@ -141,4 +151,12 @@ class TransactionSchema(ma.SQLAlchemyAutoSchema):
         include_relationships = True
         load_instance = True
         include_fk = True
+
+class PriceSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Price
+        include_relationships = True
+        load_instance = True
+        include_fk = True
+
 
