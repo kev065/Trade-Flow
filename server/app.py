@@ -2,13 +2,17 @@ from flask import Flask, jsonify, request, abort
 from models import db, ma, User, Token, Alert, Trade, Wallet, Transaction, UserSchema, TokenSchema, AlertSchema, TradeSchema, WalletSchema, TransactionSchema 
 from flask_migrate import Migrate
 from services import BinanceService
+from flask_bcrypt import Bcrypt
 
+flask_bcrypt = Bcrypt()
 
 def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
     db.init_app(app)
-    ma.init_app(app) 
+    ma.init_app(app)
+    flask_bcrypt.init_app(app)
+    app.flask_bcrypt = flask_bcrypt
     migrate = Migrate(app, db)
 
     @app.route('/')
@@ -77,9 +81,9 @@ def create_app():
     def internal_server_error(e):
         return jsonify(error=str(e)), 500
 
-    return app
+    return app, flask_bcrypt
 
-app = create_app()
+app, flask_bcrypt = create_app()
 
 if __name__ == '__main__':
     with app.app_context():
