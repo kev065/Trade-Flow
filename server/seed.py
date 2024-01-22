@@ -1,7 +1,7 @@
 from models import db, User, Token, Alert, Trade, Wallet, Transaction, Price
 from datetime import datetime
 from services import BinanceService
-from app import app
+from app import app, flask_bcrypt
 
 def seed_data():
     try:
@@ -9,6 +9,7 @@ def seed_data():
         user1 = User.query.filter_by(username='user1', email='user1@example.com').first()
         if not user1:
             user1 = User(username='user1', email='user1@example.com')
+            user1.set_password('vnl92387.B')
             db.session.add(user1)
 
         token1 = Token.query.filter_by(name='Bitcoin', symbol='BTCUSDT').first()
@@ -51,6 +52,13 @@ def seed_data():
 
         db.session.commit()
         print("Data seeding successful!")
+
+        # Test password checking
+        user = User.query.filter_by(username='user1').first()
+        assert user.check_password('vnl92387.B')  # should return True
+        assert not user.check_password('itsyaboy92')  # should return False
+        print("Password checking successful!")
+
     except Exception as e:
         print(f"An error occurred while seeding data: {e}")
         db.session.rollback()
