@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 from flask_marshmallow import Marshmallow
 from datetime import datetime
+from flask import current_app
 
 db = SQLAlchemy()
 ma = Marshmallow()
@@ -31,6 +32,15 @@ class User(db.Model):
 
     # Wallet
     wallet = db.relationship('Wallet', backref='user', uselist=False)
+
+    def set_password(self, password):
+        print(current_app.flask_bcrypt)
+        self.password_hash = current_app.flask_bcrypt.generate_password_hash(password).decode('utf-8')
+
+        
+    
+    def check_password(self, password):
+        return current_app.flask_bcrypt.check_password_hash(self.password_hash, password)
 
 class Token(db.Model):
     __tablename__ = 'tokens'
