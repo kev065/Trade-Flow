@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 function OrderForm() {
-  const [orderType, setOrderType] = useState('');
+  const [orderType, setOrderType] = useState('Market');
   const [orderSize, setOrderSize] = useState('');
 
   const handleBuy = event => {
@@ -29,15 +29,23 @@ function OrderForm() {
 
   return (
     <form id="order-form">
-      <label>
-        Order Type:
-        <input type="text" value={orderType} onChange={e => setOrderType(e.target.value)} />
-      </label>
-      <label>
-        Order Size:
+      <div className="order-field">
+        <label>Order Type:</label>
+        <select value={orderType} onChange={e => setOrderType(e.target.value)}>
+          <option value="Market">Market</option>
+          <option value="Limit">Limit</option>
+          <option value="Stop Limit">Stop limit</option>
+          <option value="Stop Market">Stop Market</option>
+          <option value="Trailing Stop">Trailing Stop</option>
+          <option value="Post Only">Post Only</option>
+          <option value="Scaled Order">Scaled Order</option>
+        </select>
+      </div>
+      <div className="order-field">
+        <label>Order Size:</label>
         <input type="number" value={orderSize} onChange={e => setOrderSize(e.target.value)} />
-      </label>
-      <div>
+      </div>
+      <div className="order-buttons">
         <button type="button" onClick={handleBuy}>Buy</button>
         <button type="button" onClick={handleSell}>Sell</button>
       </div>
@@ -46,3 +54,4 @@ function OrderForm() {
 }
 
 export default OrderForm;
+
