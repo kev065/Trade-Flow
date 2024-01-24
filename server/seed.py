@@ -9,6 +9,7 @@ def seed_data():
         user1 = User.query.filter_by(username='user1', email='user1@example.com').first()
         if not user1:
             user1 = User(username='user1', email='user1@example.com')
+            user1.set_password('password123')
             db.session.add(user1)
 
         token1 = Token.query.filter_by(name='Bitcoin', symbol='BTCUSDT').first()
