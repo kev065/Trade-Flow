@@ -1,8 +1,10 @@
 from flask import Flask, jsonify, request, abort
+from flask_bcrypt import Bcrypt
 from models import db, ma, User, Token, Alert, Trade, Wallet, Price, Transaction, UserSchema, TokenSchema, AlertSchema, TradeSchema, PriceSchema, WalletSchema, TransactionSchema 
 from flask_migrate import Migrate
 from services import BinanceService
 
+bcrypt = Bcrypt()
 
 def create_app():
     app = Flask(__name__)
@@ -10,46 +12,83 @@ def create_app():
     db.init_app(app)
     ma.init_app(app) 
     migrate = Migrate(app, db)
+    bcrypt.init_app(app)
 
     @app.route('/')
     def index():
         return "Trade the Future, Today! Spot the opportunity, Perpetuate the profits!"
     
     @app.route('/users', methods=['GET'])
-    def get_users():
+    def get_all_users():
         users = User.query.all()
         user_schema = UserSchema(many=True)
         return jsonify(user_schema.dump(users)), 200
+
+    @app.route('/users/<int:user_id>', methods=['GET'])
+    def get_user(user_id):
+        user = User.query.get(user_id)
+        user_schema = UserSchema()
+        return jsonify(user_schema.dump(user)), 200
     
     @app.route('/tokens', methods=['GET'])
-    def get_tokens():
+    def get_all_tokens():
         tokens = Token.query.all()
         token_schema = TokenSchema(many=True)
         return jsonify(token_schema.dump(tokens)), 200
+
+    @app.route('/tokens/<int:token_id>', methods=['GET'])
+    def get_token(token_id):
+        token = Token.query.get(token_id)
+        token_schema = TokenSchema()
+        return jsonify(token_schema.dump(token)), 200
     
     @app.route('/alerts', methods=['GET'])
-    def get_alerts():
+    def get_all_alerts():
         alerts = Alert.query.all()
         alert_schema = AlertSchema(many=True)
         return jsonify(alert_schema.dump(alerts)), 200
+
+    @app.route('/alerts/<int:alert_id>', methods=['GET'])
+    def get_alert(alert_id):
+        alert = Alert.query.get(alert_id)
+        alert_schema = AlertSchema()
+        return jsonify(alert_schema.dump(alert)), 200
     
     @app.route('/trades', methods=['GET'])
-    def get_trades():
+    def get_all_trades():
         trades = Trade.query.all()
         trade_schema = TradeSchema(many=True)
         return jsonify(trade_schema.dump(trades)), 200
+
+    @app.route('/trades/<int:trade_id>', methods=['GET'])
+    def get_trade(trade_id):
+        trade = Trade.query.get(trade_id)
+        trade_schema = TradeSchema()
+        return jsonify(trade_schema.dump(trade)), 200
     
     @app.route('/wallets', methods=['GET'])
-    def get_wallets():
+    def get_all_wallets():
         wallets = Wallet.query.all()
         wallet_schema = WalletSchema(many=True)
         return jsonify(wallet_schema.dump(wallets)), 200
 
+    @app.route('/wallets/<int:wallet_id>', methods=['GET'])
+    def get_single_wallet(wallet_id):
+        wallet = Wallet.query.get(wallet_id)
+        wallet_schema = WalletSchema()
+        return jsonify(wallet_schema.dump(wallet)), 200
+
     @app.route('/transactions', methods=['GET'])
-    def get_transactions():
+    def get_all_transactions():
         transactions = Transaction.query.all()
         transaction_schema = TransactionSchema(many=True)
         return jsonify(transaction_schema.dump(transactions)), 200
+
+    @app.route('/transactions/<int:transaction_id>', methods=['GET'])
+    def get_transaction(transaction_id):
+        transaction = Transaction.query.get(transaction_id)
+        transaction_schema = TransactionSchema()
+        return jsonify(transaction_schema.dump(transaction)), 200
     
     @app.route('/users/<int:user_id>/watchlist', methods=['GET'])
     def get_user_watchlist(user_id):
@@ -60,10 +99,16 @@ def create_app():
         return jsonify(token_schema.dump(user.watchlist)), 200
     
     @app.route('/prices', methods=['GET'])
-    def get_prices():
+    def get_all_prices():
         prices = Price.query.all()
         price_schema = PriceSchema(many=True)
         return jsonify(price_schema.dump(prices)), 200
+
+    @app.route('/prices/<int:price_id>', methods=['GET'])
+    def get_price(price_id):
+        price = Price.query.get(price_id)
+        price_schema = PriceSchema()
+        return jsonify(price_schema.dump(price)), 200
 
     @app.route('/order', methods=['POST'])
     def place_order():
@@ -114,6 +159,29 @@ def create_app():
         db.session.commit()
         transaction_schema = TransactionSchema()
         return jsonify(transaction_schema.dump(transaction)), 201
+
+    @app.route('/register', methods=['POST'])
+    def register():
+        data = request.get_json()
+        if not data:
+            abort(400, description="No input data provided")
+
+        required_fields = ['username', 'email', 'password']
+        if not all(field in data for field in required_fields):
+            abort(400, description="Missing required field(s)")
+
+        existing_user = User.query.filter_by(email=data['email']).first()
+        if existing_user:
+            abort(400, description="User with this email already exists")
+
+        new_user = User(username=data['username'], email=data['email'])
+        new_user.set_password(data['password'])
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        user_schema = UserSchema()
+        return jsonify(user_schema.dump(new_user)), 201
 
     @app.errorhandler(400)
     def bad_request(e):
