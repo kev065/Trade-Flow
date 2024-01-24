@@ -1,15 +1,55 @@
 .App {
+  display: block;
+  height: 100vh;
+}
+
+.header {
+  height: 10%; 
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: space-between;
+}
+
+.logo, .actions, .preferences {
+  width: 30%; 
+}
+
+.logo-img {
+  width: 130px; 
+  height: auto;
+}
+
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  min-width: 160px;
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
 }
 
 .chart {
-  width: 60%; 
-  height: 50%; 
+  width: 70%; 
+  height: 80%; 
+  float: left;
 }
 
-.order-form {
+.orderform {
   width: 30%; 
-  height: 30%; 
+  height: 80%; 
+  float: right;
 }
