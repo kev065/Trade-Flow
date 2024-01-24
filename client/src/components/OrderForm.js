@@ -34,7 +34,7 @@ function OrderForm() {
         <select value={orderType} onChange={e => setOrderType(e.target.value)}>
           <option value="Market">Market</option>
           <option value="Limit">Limit</option>
-          <option value="Stop Limit">Stop limit</option>
+          <option value="Stop limit">Stop limit</option>
           <option value="Stop Market">Stop Market</option>
           <option value="Trailing Stop">Trailing Stop</option>
           <option value="Post Only">Post Only</option>
@@ -43,7 +43,10 @@ function OrderForm() {
       </div>
       <div className="order-field">
         <label>Order Size:</label>
-        <input type="number" value={orderSize} onChange={e => setOrderSize(e.target.value)} />
+        <div className="input-with-label">
+          <input type="number" value={orderSize} onChange={e => setOrderSize(e.target.value)} />
+          <span>USDT</span>
+        </div>
       </div>
       <div className="order-buttons">
         <button type="button" onClick={handleBuy}>Buy</button>
@@ -54,4 +57,3 @@ function OrderForm() {
 }
 
 export default OrderForm;
-
