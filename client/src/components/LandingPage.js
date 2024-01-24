@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Line } from 'react-chartjs-2';
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
 import Chart from 'chart.js/auto';
-import 'chartjs-plugin-zoom';
 
 const LandingPage = () => {
   const [symbol, setSymbol] = useState('');
@@ -16,7 +15,11 @@ const LandingPage = () => {
     newSocket.onmessage = (message) => {
       const data = JSON.parse(message.data);
       const { T: time, p: price } = data;
-      setPriceData((prevData) => [...prevData, { time, price }]);
+      
+      // converts the timestamps from unit epoch time EAT
+      const date = new Date(time);
+      const readableTime = date.toLocaleTimeString();
+      setPriceData((prevData) => [...prevData, { time: readableTime, price }]);
     };
 
     setSocket(newSocket);
@@ -27,17 +30,22 @@ const LandingPage = () => {
   }, []);
 
   const subscribeToSymbol = () => {
+    // this unsubscribes from the current symbol
     if (socket) {
       socket.close();
       setSocket(null);
     }
 
+    // this subscribes to new symbol
     const newSocket = new W3CWebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}usdt@trade`);
 
     newSocket.onmessage = (message) => {
       const data = JSON.parse(message.data);
       const { T: time, p: price } = data;
-      setPriceData((prevData) => [...prevData, { time, price }]);
+
+      const date = new Date(time);
+      const readableTime = date.toLocaleTimeString();
+      setPriceData((prevData) => [...prevData, { time: readableTime, price }]);
     };
 
     setSocket(newSocket);
@@ -45,12 +53,13 @@ const LandingPage = () => {
 
   useEffect(() => {
     if (chartRef.current && priceData.length > 0) {
+      // destroys the existing chart if it exists - this helped solve an annoying error
       if (chartRef.current.chart) {
         chartRef.current.chart.destroy();
       }
-
+  
       const ctx = chartRef.current.getContext('2d');
-
+  
       const chartConfig = {
         type: 'line',
         data: {
@@ -71,40 +80,20 @@ const LandingPage = () => {
               labels: priceData.map((data) => data.time),
             },
             y: {
-              // y-axis configuration
-              title: {
-                display: true,
-                text: 'Price',
-              },
-              suggestedMin: 40000, 
-              suggestedMax: 40300,
-            },
-          },
-          plugins: {
-            zoom: {
-              pan: {
-                enabled: true,
-                mode: 'x',
-              },
-              zoom: {
-                wheel: {
-                  enabled: true,
-                },
-                pinch: {
-                  enabled: true,
-                },
-                mode: 'x',
-              },
+              // y-axis configuration - will add this
             },
           },
         },
       };
-
+  
+      // creates a new chart
       const newChart = new Chart(ctx, chartConfig);
-
+  
+      // attaches the chart instance to the canvas element
       chartRef.current.chart = newChart;
     }
   }, [priceData]);
+  
 
   return (
     <div>
