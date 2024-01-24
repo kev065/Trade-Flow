@@ -18,7 +18,6 @@
   height: auto;
 }
 
-
 .dropdown {
   position: relative;
   display: inline-block;
@@ -48,8 +47,26 @@
   float: left;
 }
 
-.orderform {
+.order-form {
   width: 30%; 
   height: 80%; 
   float: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.order-form button {
+  width: 70%;
+}
+
+.order-field {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.order-buttons {
+  display: flex;
+  justify-content: space-between;
 }
