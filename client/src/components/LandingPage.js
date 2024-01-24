@@ -4,28 +4,17 @@ import { w3cwebsocket as W3CWebSocket } from 'websocket';
 import Chart from 'chart.js/auto';
 
 const LandingPage = () => {
-  const [symbol, setSymbol] = useState('');
+  const [symbol, setSymbol] = useState('btcusdt');
   const [priceData, setPriceData] = useState([]);
   const [socket, setSocket] = useState(null);
   const chartRef = useRef(null);
 
   useEffect(() => {
-    const newSocket = new W3CWebSocket('wss://stream.binance.com:9443/ws/btcusdt@trade');
-
-    newSocket.onmessage = (message) => {
-      const data = JSON.parse(message.data);
-      const { T: time, p: price } = data;
-      
-      // converts the timestamps from unit epoch time EAT
-      const date = new Date(time);
-      const readableTime = date.toLocaleTimeString();
-      setPriceData((prevData) => [...prevData, { time: readableTime, price }]);
-    };
-
-    setSocket(newSocket);
-
+    subscribeToSymbol();
     return () => {
-      newSocket.close();
+      if (socket) {
+        socket.close();
+      }
     };
   }, []);
 
@@ -37,7 +26,7 @@ const LandingPage = () => {
     }
 
     // this subscribes to new symbol
-    const newSocket = new W3CWebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}usdt@trade`);
+    const newSocket = new W3CWebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@trade`);
 
     newSocket.onmessage = (message) => {
       const data = JSON.parse(message.data);
@@ -97,14 +86,14 @@ const LandingPage = () => {
 
   return (
     <div>
-      <h1>Real-time Price Chart</h1>
+      <h1>Real-Time Price Chart</h1>
       <input
         type="text"
         value={symbol}
         onChange={(e) => setSymbol(e.target.value)}
         placeholder="Enter Symbol"
       />
-      <button onClick={subscribeToSymbol}>Subscribe</button>
+      <button onClick={subscribeToSymbol}>View</button>
       <canvas ref={chartRef} width="400" height="200" />
     </div>
   );
