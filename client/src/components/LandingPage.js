@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Line } from 'react-chartjs-2';
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
 import Chart from 'chart.js/auto';
+import 'chartjs-plugin-zoom';
 
 const LandingPage = () => {
   const [symbol, setSymbol] = useState('');
@@ -26,13 +27,11 @@ const LandingPage = () => {
   }, []);
 
   const subscribeToSymbol = () => {
-    // this unsubscribes from the current symbol that i've selected
     if (socket) {
       socket.close();
       setSocket(null);
     }
 
-    // this subscribes to new symbol selected
     const newSocket = new W3CWebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}usdt@trade`);
 
     newSocket.onmessage = (message) => {
@@ -46,13 +45,12 @@ const LandingPage = () => {
 
   useEffect(() => {
     if (chartRef.current && priceData.length > 0) {
-      // destroys the existing chart if it exists - this helped solve an annoying error
       if (chartRef.current.chart) {
         chartRef.current.chart.destroy();
       }
-  
+
       const ctx = chartRef.current.getContext('2d');
-  
+
       const chartConfig = {
         type: 'line',
         data: {
@@ -73,20 +71,40 @@ const LandingPage = () => {
               labels: priceData.map((data) => data.time),
             },
             y: {
-              // y-axis configuration - will add this
+              // y-axis configuration
+              title: {
+                display: true,
+                text: 'Price',
+              },
+              suggestedMin: 40000, 
+              suggestedMax: 40300,
+            },
+          },
+          plugins: {
+            zoom: {
+              pan: {
+                enabled: true,
+                mode: 'x',
+              },
+              zoom: {
+                wheel: {
+                  enabled: true,
+                },
+                pinch: {
+                  enabled: true,
+                },
+                mode: 'x',
+              },
             },
           },
         },
       };
-  
-      // creates a new chart
+
       const newChart = new Chart(ctx, chartConfig);
-  
-      // this attaches the chart instance to the canvas element
+
       chartRef.current.chart = newChart;
     }
   }, [priceData]);
-  
 
   return (
     <div>
