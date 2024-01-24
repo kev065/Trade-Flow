@@ -1,21 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Line } from 'react-chartjs-2';
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
 import Chart from 'chart.js/auto';
-import 'chartjs-adapter-date-fns';
 
 const LandingPage = () => {
-  const [symbol, setSymbol] = useState('btcusdt');
+  const [symbol, setSymbol] = useState('');
   const [priceData, setPriceData] = useState([]);
   const [socket, setSocket] = useState(null);
   const chartRef = useRef(null);
 
   useEffect(() => {
-    const newSocket = new W3CWebSocket(`wss://stream.binance.com:9443/ws/${symbol}@trade`);
+    const newSocket = new W3CWebSocket('wss://stream.binance.com:9443/ws/btcusdt@trade');
 
     newSocket.onmessage = (message) => {
       const data = JSON.parse(message.data);
       const { T: time, p: price } = data;
-      setPriceData((prevData) => [...prevData, { t: time, y: price }]);
+      setPriceData((prevData) => [...prevData, { time, price }]);
     };
 
     setSocket(newSocket);
@@ -23,27 +23,45 @@ const LandingPage = () => {
     return () => {
       newSocket.close();
     };
-  }, [symbol]);
+  }, []);
 
-  useEffect(() => {
-    if (!chartRef.current) {
-      return;
+  const subscribeToSymbol = () => {
+    // this unsubscribes from the current symbol that i've selected
+    if (socket) {
+      socket.close();
+      setSocket(null);
     }
 
-    if (chartRef.current.chart) {
-      chartRef.current.chart.data.datasets[0].data = priceData;
-      chartRef.current.chart.update();
-    } else {
+    // this subscribes to new symbol selected
+    const newSocket = new W3CWebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}usdt@trade`);
+
+    newSocket.onmessage = (message) => {
+      const data = JSON.parse(message.data);
+      const { T: time, p: price } = data;
+      setPriceData((prevData) => [...prevData, { time, price }]);
+    };
+
+    setSocket(newSocket);
+  };
+
+  useEffect(() => {
+    if (chartRef.current && priceData.length > 0) {
+      // destroys the existing chart if it exists - this helped solve an annoying error
+      if (chartRef.current.chart) {
+        chartRef.current.chart.destroy();
+      }
+  
       const ctx = chartRef.current.getContext('2d');
-      const newChart = new Chart(ctx, {
+  
+      const chartConfig = {
         type: 'line',
         data: {
+          labels: priceData.map((data) => data.time),
           datasets: [
             {
               label: 'Price',
-              data: priceData,
-              borderColor: 'rgba(255, 0, 0, 1)',
-              borderWidth: 1,
+              data: priceData.map((data) => data.price),
+              borderColor: 'blue',
               fill: false,
             },
           ],
@@ -51,38 +69,24 @@ const LandingPage = () => {
         options: {
           scales: {
             x: {
-              type: 'time',
-              time: {
-                unit: 'second',
-              },
+              type: 'category',
+              labels: priceData.map((data) => data.time),
             },
             y: {
-              // y-axis - will update values
+              // y-axis configuration - will add this
             },
           },
         },
-      });
-
+      };
+  
+      // creates a new chart
+      const newChart = new Chart(ctx, chartConfig);
+  
+      // this attaches the chart instance to the canvas element
       chartRef.current.chart = newChart;
     }
   }, [priceData]);
-
-  const subscribeToSymbol = () => {
-    if (socket) {
-      socket.close();
-      setSocket(null);
-    }
-
-    const newSocket = new W3CWebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@trade`);
-
-    newSocket.onmessage = (message) => {
-      const data = JSON.parse(message.data);
-      const { T: time, p: price } = data;
-      setPriceData((prevData) => [...prevData, { t: time, y: price }]);
-    };
-
-    setSocket(newSocket);
-  };
+  
 
   return (
     <div>
