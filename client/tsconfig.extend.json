@@ -1,0 +1,8 @@
+// tsconfig.extend.json
+
+{
+    "compilerOptions": {
+      "baseUrl": "src"
+    }
+  }
+  
