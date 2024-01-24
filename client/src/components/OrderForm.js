@@ -5,13 +5,21 @@ function OrderForm() {
   const [orderType, setOrderType] = useState('');
   const [orderSize, setOrderSize] = useState('');
 
-  const handleSubmit = event => {
+  const handleBuy = event => {
     event.preventDefault();
+    placeOrder('buy');
+  };
 
+  const handleSell = event => {
+    event.preventDefault();
+    placeOrder('sell');
+  };
+
+  const placeOrder = (type) => {
     axios.post('http://localhost:5555/order', {
       user_id: 1,  
       token_id: 'BTCUSDT',  
-      order_type: orderType,
+      order_type: type,
       quantity: orderSize,
       futures: false,  
     })
@@ -20,7 +28,7 @@ function OrderForm() {
   };
 
   return (
-    <form id="order-form" onSubmit={handleSubmit}>
+    <form id="order-form">
       <label>
         Order Type:
         <input type="text" value={orderType} onChange={e => setOrderType(e.target.value)} />
@@ -29,10 +37,12 @@ function OrderForm() {
         Order Size:
         <input type="number" value={orderSize} onChange={e => setOrderSize(e.target.value)} />
       </label>
-      <button type="submit">Submit</button>
+      <div>
+        <button type="button" onClick={handleBuy}>Buy</button>
+        <button type="button" onClick={handleSell}>Sell</button>
+      </div>
     </form>
   );
 }
 
 export default OrderForm;
-
