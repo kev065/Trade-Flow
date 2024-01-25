@@ -1,6 +1,7 @@
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
+from marshmallow import fields
 from flask_marshmallow import Marshmallow
 from datetime import datetime
 from flask_jwt_extended import create_access_token
@@ -145,6 +146,7 @@ class AlertSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
 
 class TradeSchema(ma.SQLAlchemyAutoSchema):
+    token_id = fields.String()
     class Meta:
         model = Trade
         include_relationships = True
