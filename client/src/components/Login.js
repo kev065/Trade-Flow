@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Login({ setIsLoggedIn }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -16,6 +18,7 @@ function Login({ setIsLoggedIn }) {
       if (response.data.authenticated) {
         setIsLoggedIn(true);
         localStorage.setItem('token', response.data.token);
+        navigate('/'); 
       } else {
         alert('Invalid username or password');
       }
