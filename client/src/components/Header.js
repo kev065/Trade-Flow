@@ -2,7 +2,12 @@ import React from 'react';
 import '../App.css';
 import logo from '../logo2.jpeg';
 
-function Header({ toggleTheme }) {
+function Header({ toggleTheme, isLoggedIn, setIsLoggedIn }) { // adds isLoggedIn and setIsLoggedIn as props
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+  };
+
   return (
     <header className="header">
       <div className="logo">
@@ -21,6 +26,7 @@ function Header({ toggleTheme }) {
         Preferences
         <div className="dropdown-content-preferences">
           <button onClick={toggleTheme}>Toggle theme</button>
+          {isLoggedIn ? <button onClick={handleLogout}>Logout</button> : null} // to conditionally render the Logout button
         </div>
       </div>
     </header>
@@ -28,3 +34,4 @@ function Header({ toggleTheme }) {
 }
 
 export default Header;
+
