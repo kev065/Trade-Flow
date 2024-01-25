@@ -1,7 +1,12 @@
+from flask_cors import CORS
 from models import db, User, Token, Alert, Trade, Wallet, Transaction, Price
 from datetime import datetime
 from services import BinanceService
-from app import app
+from app import create_app
+
+app = create_app()
+
+CORS(app)
 
 def seed_data():
     try:
