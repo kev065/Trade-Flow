@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import Header from './components/Header';
 import LandingPage from './components/LandingPage';
 import OrderForm from './components/OrderForm';
-import Login from './components/Login';
+import Login from './components/Login'; 
 import './light.css';
 import './dark.css';
 
@@ -22,7 +22,7 @@ function App() {
   return (
     <Router>
       <div className={`App ${theme}`}>
-        <Header toggleTheme={toggleTheme} isLoggedIn={isLoggedIn} />
+        <Header toggleTheme={toggleTheme} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} /> // setIsLoggedIn passed to Header
         <div className="chart">
           <LandingPage />
         </div>
@@ -38,6 +38,7 @@ function App() {
 }
 
 export default App;
+
 
 
 
