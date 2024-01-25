@@ -2,9 +2,11 @@ from flask import Flask, jsonify, request, abort
 from flask_bcrypt import Bcrypt
 from models import db, ma, User, Token, Alert, Trade, Wallet, Price, Transaction, UserSchema, TokenSchema, AlertSchema, TradeSchema, PriceSchema, WalletSchema, TransactionSchema 
 from flask_migrate import Migrate
+from flask_cors import CORS
 from services import BinanceService
 
 bcrypt = Bcrypt()
+
 
 def create_app():
     app = Flask(__name__)
@@ -198,6 +200,7 @@ def create_app():
     return app
 
 app = create_app()
+CORS(app)
 
 if __name__ == '__main__':
     with app.app_context():
