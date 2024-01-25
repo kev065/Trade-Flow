@@ -1,18 +1,30 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-function OrderForm() {
+function OrderForm({ isLoggedIn }) { 
   const [orderType, setOrderType] = useState('Market');
   const [orderSize, setOrderSize] = useState('');
+  const navigate = useNavigate();
 
   const handleBuy = event => {
     event.preventDefault();
-    placeOrder('buy');
+    if (!isLoggedIn) {
+      alert("Can't place trades without logging in");
+      navigate('/login');
+    } else {
+      placeOrder('buy');
+    }
   };
 
   const handleSell = event => {
     event.preventDefault();
-    placeOrder('sell');
+    if (!isLoggedIn) {
+      alert("Can't place trades without logging in");
+      navigate('/login');
+    } else {
+      placeOrder('sell');
+    }
   };
 
   const placeOrder = (type) => {
@@ -57,3 +69,4 @@ function OrderForm() {
 }
 
 export default OrderForm;
+
