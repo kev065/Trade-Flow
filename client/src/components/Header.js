@@ -1,8 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../App.css';
 import logo from '../logo2.jpeg';
 
-function Header({ toggleTheme, isLoggedIn, setIsLoggedIn }) { // adds isLoggedIn and setIsLoggedIn as props
+function Header({ toggleTheme, isLoggedIn, setIsLoggedIn }) { 
+  const navigate = useNavigate();
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
@@ -26,7 +29,7 @@ function Header({ toggleTheme, isLoggedIn, setIsLoggedIn }) { // adds isLoggedIn
         Preferences
         <div className="dropdown-content-preferences">
           <button onClick={toggleTheme}>Toggle theme</button>
-          {isLoggedIn ? <button onClick={handleLogout}>Logout</button> : null} // to conditionally render the Logout button
+          {isLoggedIn ? <button onClick={handleLogout}>Logout</button> : <button onClick={() => navigate('/login')}>Login</button>} 
         </div>
       </div>
     </header>
@@ -34,4 +37,5 @@ function Header({ toggleTheme, isLoggedIn, setIsLoggedIn }) { // adds isLoggedIn
 }
 
 export default Header;
+
 
