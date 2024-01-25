@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from services import BinanceService
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, create_access_token
-from models import User
+
 
 bcrypt = Bcrypt()
 
@@ -123,14 +123,34 @@ def create_app():
         data = request.get_json()
         if not data:
             abort(400, description="No input data provided")
+
         required_fields = ['user_id', 'token_id', 'order_type', 'quantity', 'futures']
         if not all(field in data for field in required_fields):
             abort(400, description="Missing required field(s)")
+
+        token_symbol = data['token_id']
+        token = Token.query.filter_by(symbol=token_symbol).first()
+
+        if token is None:
+            abort(404, description=f"Token with symbol {token_symbol} not found")
+
         service = BinanceService()
-        price = service.get_price(data['token_id'])  # Get the current price of the token
-        trade = Trade(user_id=data['user_id'], token_id=data['token_id'], amount=data['quantity'], price=price, type=data['order_type'], status='open', pnl=0, futures=data['futures'])
+        price = service.get_price(token_symbol)  
+
+        trade = Trade(
+            user_id=data['user_id'],
+            token_id=token.id,
+            amount=data['quantity'],
+            price=price,
+            type=data['order_type'],
+            status='open',
+            pnl=0,
+            futures=data['futures']
+        )
+
         db.session.add(trade)
         db.session.commit()
+
         trade_schema = TradeSchema()
         return jsonify(trade_schema.dump(trade)), 201
 
