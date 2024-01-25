@@ -21,8 +21,6 @@ def create_app():
     app.config['JWT_SECRET_KEY'] = '123456789'
     jwt = JWTManager(app)
 
-    
-
 
     @app.route('/')
     def index():
