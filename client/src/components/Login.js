@@ -9,22 +9,26 @@ function Login({ setIsLoggedIn }) {
 
   const handleSubmit = event => {
     event.preventDefault();
-
+  
     axios.post('http://localhost:5555/login', {
       username: username,
       password: password
     })
     .then(response => {
-      if (response.data.authenticated) {
+      console.log('Login Response:', response.data); // Log the response for debugging
+  
+      if (response.data.access_token) {
         setIsLoggedIn(true);
-        localStorage.setItem('token', response.data.token);
-        navigate('/'); 
+        localStorage.setItem('token', response.data.access_token);
+        navigate('/');
       } else {
         alert('Invalid username or password');
       }
     })
     .catch(error => console.error('Error logging in', error));
   };
+  
+  
 
   return (
     <form onSubmit={handleSubmit}>
