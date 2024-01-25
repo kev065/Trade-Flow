@@ -12,6 +12,7 @@ marshmallow-sqlalchemy = "*"
 requests = "*"
 python-dotenv = "*"
 werkzeug = "*"
+flask-bcrypt = "*"
 
 [dev-packages]
 
