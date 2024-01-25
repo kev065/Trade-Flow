@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 from flask_marshmallow import Marshmallow
 from datetime import datetime
+from flask_jwt_extended import create_access_token
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -27,6 +28,9 @@ class User(db.Model):
     
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
+    
+    def generate_access_token(self):
+        return create_access_token(identity=self.id)
 
     # Watchlist
     watchlist = db.relationship('Token', secondary=watchlist, backref=db.backref('users', lazy='dynamic'))
