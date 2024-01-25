@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import LandingPage from './components/LandingPage';
 import OrderForm from './components/OrderForm';
@@ -22,22 +22,23 @@ function App() {
   return (
     <Router>
       <div className={`App ${theme}`}>
-        <Header toggleTheme={toggleTheme} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} /> // setIsLoggedIn passed to Header
+        <Header toggleTheme={toggleTheme} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} /> 
         <div className="chart">
           <LandingPage />
         </div>
         <div className="order-form">
-          {isLoggedIn ? <OrderForm /> : <Redirect to="/login" />}
+          <OrderForm isLoggedIn={isLoggedIn} /> 
         </div>
-        <Route path="/login">
-          <Login setIsLoggedIn={setIsLoggedIn} />
-        </Route>
+        <Routes>
+          <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+        </Routes>
       </div>
     </Router>
   );
 }
 
 export default App;
+
 
 
 
