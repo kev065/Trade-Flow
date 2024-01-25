@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv() 
 
 class BinanceService:
-    BASE_URL = 'https://api.binance.com'  
+    BASE_URL = 'https://testnet.binancefuture.com'  
     API_KEY = os.getenv("BINANCE_API_KEY")
     SECRET_KEY = os.getenv("BINANCE_SECRET_KEY")
 
@@ -14,7 +14,7 @@ class BinanceService:
         headers = {
             'X-MBX-APIKEY': self.API_KEY
         }
-        response = requests.get(f'{self.BASE_URL}/api/v3/ticker/price', headers=headers, params={'symbol': symbol})
+        response = requests.get(f'{self.BASE_URL}/fapi/v1/ticker/price', headers=headers, params={'symbol': symbol})  
         response.raise_for_status()  # Raises an exception if the request failed
         data = response.json()
         return float(data['price'])
