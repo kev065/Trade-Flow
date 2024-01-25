@@ -4,7 +4,8 @@ from models import db, ma, User, Token, Alert, Trade, Wallet, Price, Transaction
 from flask_migrate import Migrate
 from flask_cors import CORS
 from services import BinanceService
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, create_access_token
+from models import User
 
 bcrypt = Bcrypt()
 
@@ -193,6 +194,24 @@ def create_app():
 
         user_schema = UserSchema()
         return jsonify({"user": user_schema.dump(new_user), "access_token": access_token}), 201
+    
+    @app.route('/login', methods=['POST'])
+    def login():
+        data = request.get_json()
+
+        if not data or 'username' not in data or 'password' not in data:
+            return jsonify({'message': 'Invalid request'}), 400
+        username = data['username']
+        password = data['password']
+
+        user = User.query.filter_by(username=username).first()
+        if user and user.check_password(password):
+            access_token = create_access_token(identity=user.id)
+            user_schema = UserSchema()
+            return jsonify(access_token=access_token, user=user_schema.dump(user)), 200
+        else:
+            return jsonify({'message': 'Invalid credentials'}), 401
+    
     
     @app.route('/protected', methods=['GET'])
     @jwt_required()
