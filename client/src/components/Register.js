@@ -21,7 +21,7 @@ function Register() {
   
       if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
-        navigate('/');
+        navigate('/login');
       } else {
         alert('Registration failed');
       }
