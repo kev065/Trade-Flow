@@ -24,9 +24,9 @@ function App() {
 
   return (
     <div className={`App ${theme}`}>
-      {location.pathname !== '/login' && <Header toggleTheme={toggleTheme} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} 
-      {location.pathname !== '/login' && <div className="chart"><LandingPage /></div>}
-      {location.pathname !== '/login' && <div className="order-form"><OrderForm isLoggedIn={isLoggedIn} /></div>}
+      {location.pathname !== '/login' && location.pathname !== '/register' && <Header toggleTheme={toggleTheme} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} 
+      {location.pathname !== '/login' && location.pathname !== '/register' && <div className="chart"><LandingPage /></div>}
+      {location.pathname !== '/login' && location.pathname !== '/register' && <div className="order-form"><OrderForm isLoggedIn={isLoggedIn} /></div>}
       <Routes>
         <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
         <Route path="/register" element={<Register />} />
