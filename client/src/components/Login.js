@@ -15,7 +15,7 @@ function Login({ setIsLoggedIn }) {
       password: password
     })
     .then(response => {
-      console.log('Login Response:', response.data); // Log the response for debugging
+      console.log('Login Response:', response.data);
   
       if (response.data.access_token) {
         setIsLoggedIn(true);

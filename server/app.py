@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from services import BinanceService
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, create_access_token
+import traceback
 
 
 bcrypt = Bcrypt()
@@ -17,7 +18,7 @@ def create_app():
     ma.init_app(app) 
     migrate = Migrate(app, db)
     bcrypt.init_app(app)
-    CORS(app)
+    CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
     app.config['JWT_SECRET_KEY'] = '123456789'
     jwt = JWTManager(app)
 
@@ -117,42 +118,54 @@ def create_app():
         price = Price.query.get(price_id)
         price_schema = PriceSchema()
         return jsonify(price_schema.dump(price)), 200
+    
 
     @app.route('/order', methods=['POST'])
     def place_order():
-        data = request.get_json()
-        if not data:
-            abort(400, description="No input data provided")
+        try:
+            data = request.get_json()
+            if not data:
+                abort(400, description="No input data provided")
+            
+            required_fields = ['user_id', 'token_id', 'order_type', 'quantity', 'futures']
+            if not all(field in data for field in required_fields):
+                abort(400, description="Missing required field(s)")
+            
+            token_symbol = data['token_id']
+            token = Token.query.filter_by(symbol=token_symbol).first()
 
-        required_fields = ['user_id', 'token_id', 'order_type', 'quantity', 'futures']
-        if not all(field in data for field in required_fields):
-            abort(400, description="Missing required field(s)")
+            if token is None:
+                abort(404, description=f"Token with symbol {token_symbol} not found")
 
-        token_symbol = data['token_id']
-        token = Token.query.filter_by(symbol=token_symbol).first()
+            service = BinanceService()
+            price = service.get_price(token_symbol)
 
-        if token is None:
-            abort(404, description=f"Token with symbol {token_symbol} not found")
+            order_type = data['order_type'].lower()
+            if order_type not in ['buy', 'sell', 'market']:
+                abort(400, description=f"Invalid order type: {order_type}")
+            
+            order_response = service.place_order(token_symbol, order_type, data['quantity'])
 
-        service = BinanceService()
-        price = service.get_price(token_symbol)  
+            trade = Trade(
+                user_id=data['user_id'],
+                token_id=token.id,
+                amount=data['quantity'],
+                price=price,
+                type=order_type,
+                status='open',
+                pnl=0,
+                futures=data['futures']
+            )
 
-        trade = Trade(
-            user_id=data['user_id'],
-            token_id=token.id,
-            amount=data['quantity'],
-            price=price,
-            type=data['order_type'],
-            status='open',
-            pnl=0,
-            futures=data['futures']
-        )
+            db.session.add(trade)
+            db.session.commit()
 
-        db.session.add(trade)
-        db.session.commit()
+            trade_schema = TradeSchema()
+            return jsonify(trade_schema.dump(trade)), 201
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'error': str(e)}), 400
 
-        trade_schema = TradeSchema()
-        return jsonify(trade_schema.dump(trade)), 201
 
     @app.route('/order/<int:order_id>', methods=['DELETE'])
     def cancel_order(order_id):
