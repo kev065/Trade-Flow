@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Login({ setIsLoggedIn }) {
   const [username, setUsername] = useState('');
@@ -28,20 +28,23 @@ function Login({ setIsLoggedIn }) {
     .catch(error => console.error('Error logging in', error));
   };
   
-  
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Username:
-        <input type="text" value={username} onChange={e => setUsername(e.target.value)} />
-      </label>
-      <label>
-        Password:
-        <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
-      </label>
-      <input type="submit" value="Log in" />
-    </form>
+    <div className="login-form">
+      <h2>User Log In Form</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="input-group">
+          <label>Username:</label>
+          <input type="text" value={username} onChange={e => setUsername(e.target.value)} />
+        </div>
+        <div className="input-group">
+          <label>Password:</label>
+          <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+        </div>
+        <input type="submit" value="Log in" />
+      </form>
+      <Link to="/register">Go to Registration Page</Link>
+    </div>
   );
 }
 
