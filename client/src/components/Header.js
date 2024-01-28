@@ -19,10 +19,8 @@ function Header({ toggleTheme, isLoggedIn, setIsLoggedIn }) {
       <div className="dropdown">
         <button className="dropbtn">Actions</button>
         <div className="dropdown-content">
-          <a href="#">Alerts</a>
           <a href="#">Trades</a>
           <a href="#">Wallet</a>
-          <a href="#">Watchlist</a>
         </div>
       </div>
       <div className="dropdown-preferences">
