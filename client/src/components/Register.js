@@ -9,15 +9,16 @@ function Register() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async event => {
     event.preventDefault();
-    setLoading(true);
 
     try {
+      setLoading(true);
+
       const response = await axios.post('http://localhost:5555/register', {
-        email,
-        username,
-        password,
+        email: email,
+        username: username,
+        password: password
       });
 
       console.log('Register Response:', response.data);
@@ -30,7 +31,7 @@ function Register() {
       }
     } catch (error) {
       console.error('Error registering', error);
-      alert('Registration failed');
+      alert('Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -40,15 +41,15 @@ function Register() {
     <form onSubmit={handleSubmit}>
       <label>
         Email:
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
       </label>
       <label>
         Username:
-        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
+        <input type="text" value={username} onChange={e => setUsername(e.target.value)} required />
       </label>
       <label>
         Password:
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
       </label>
       <button type="submit" disabled={loading}>
         {loading ? 'Registering...' : 'Register'}
