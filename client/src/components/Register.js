@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import zxcvbn from 'zxcvbn';
 
 function Register() {
@@ -54,6 +54,7 @@ function Register() {
 
   return (
     <div className="register-form">
+      <h2>User Registration Form</h2>
       <form onSubmit={handleSubmit}>
         <div className="input-group">
           <label>Email:</label>
@@ -76,6 +77,7 @@ function Register() {
           {loading ? 'Registering...' : 'Register'}
         </button>
       </form>
+      <Link to="/login">Already have an account? Log in here.</Link>
     </div>
   );
   
