@@ -53,6 +53,7 @@ function Register() {
   };
 
   return (
+    <div className="register-form">
     <form onSubmit={handleSubmit}>
       <label>
         Email:
@@ -75,6 +76,7 @@ function Register() {
         {loading ? 'Registering...' : 'Register'}
       </button>
     </form>
+    </div>
   );
 }
 
