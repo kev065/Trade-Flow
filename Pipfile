@@ -16,6 +16,9 @@ flask-bcrypt = "*"
 flask-cors = "*"
 flask-jwt-extended = "*"
 marshmallow = "*"
+psycopg2 = "2.9.4"
+gunicorn = "20.1.0"
+honcho = "1.1.0"
 
 [dev-packages]
 
