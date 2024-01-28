@@ -54,30 +54,31 @@ function Register() {
 
   return (
     <div className="register-form">
-    <form onSubmit={handleSubmit}>
-      <label>
-        Email:
-        <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
-      </label>
-      <label>
-        Username:
-        <input type="text" value={username} onChange={e => setUsername(e.target.value)} required />
-      </label>
-      <label>
-        Password:
-        <input type="password" value={password} onChange={handlePasswordChange} required />
-      </label>
-      <meter max="4" value={passwordStrength} />
-      <label>
-        Confirm Password:
-        <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
-      </label>
-      <button type="submit" disabled={loading}>
-        {loading ? 'Registering...' : 'Register'}
-      </button>
-    </form>
+      <form onSubmit={handleSubmit}>
+        <div className="input-group">
+          <label>Email:</label>
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
+        </div>
+        <div className="input-group">
+          <label>Username:</label>
+          <input type="text" value={username} onChange={e => setUsername(e.target.value)} required />
+        </div>
+        <div className="input-group">
+          <label>Password:</label>
+          <input type="password" value={password} onChange={handlePasswordChange} required />
+          <meter max="4" value={passwordStrength} />
+        </div>
+        <div className="input-group">
+          <label>Confirm Password:</label>
+          <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
+        </div>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Registering...' : 'Register'}
+        </button>
+      </form>
     </div>
   );
+  
 }
 
 export default Register;
