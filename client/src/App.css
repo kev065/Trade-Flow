@@ -126,3 +126,24 @@ input-group meter {
   margin-top: 10px;
 }
 
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.input-group {
+  margin-bottom: 10px;
+}
+
+.input-group label {
+  display: block; 
+  margin-bottom: 5px; 
+}
+
+.login-form input[type="submit"] {
+  margin: 0 auto;
+  display: block;
+}
