@@ -6,46 +6,56 @@ function Register() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = event => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-  
-    axios.post('http://localhost:5555/register', {
-      email: email,
-      username: username,
-      password: password
-    })
-    .then(response => {
+    setLoading(true);
+
+    try {
+      const response = await axios.post('http://localhost:5555/register', {
+        email,
+        username,
+        password,
+      });
+
       console.log('Register Response:', response.data);
-  
+
       if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
         navigate('/login');
       } else {
         alert('Registration failed');
       }
-    })
-    .catch(error => console.error('Error registering', error));
+    } catch (error) {
+      console.error('Error registering', error);
+      alert('Registration failed');
+    } finally {
+      setLoading(false);
+    }
   };
-  
+
   return (
     <form onSubmit={handleSubmit}>
       <label>
         Email:
-        <input type="email" value={email} onChange={e => setEmail(e.target.value)} />
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
       </label>
       <label>
         Username:
-        <input type="text" value={username} onChange={e => setUsername(e.target.value)} />
+        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
       </label>
       <label>
         Password:
-        <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
       </label>
-      <input type="submit" value="Register" />
+      <button type="submit" disabled={loading}>
+        {loading ? 'Registering...' : 'Register'}
+      </button>
     </form>
   );
 }
 
 export default Register;
+
