@@ -1,16 +1,24 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import zxcvbn from 'zxcvbn';
 
 function Register() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0);
   const navigate = useNavigate();
 
   const handleSubmit = async event => {
     event.preventDefault();
+
+    if (password !== confirmPassword) {
+      alert('Passwords do not match. Please enter matching passwords.');
+      return;
+    }
 
     try {
       setLoading(true);
@@ -37,6 +45,13 @@ function Register() {
     }
   };
 
+  const handlePasswordChange = event => {
+    const newPassword = event.target.value;
+    setPassword(newPassword);
+    const result = zxcvbn(newPassword);
+    setPasswordStrength(result.score); 
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <label>
@@ -49,7 +64,12 @@ function Register() {
       </label>
       <label>
         Password:
-        <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+        <input type="password" value={password} onChange={handlePasswordChange} required />
+      </label>
+      <meter max="4" value={passwordStrength} />
+      <label>
+        Confirm Password:
+        <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
       </label>
       <button type="submit" disabled={loading}>
         {loading ? 'Registering...' : 'Register'}
@@ -59,4 +79,3 @@ function Register() {
 }
 
 export default Register;
-
