@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
-import LandingPage from './components/LandingPage';
+import TradingViewWidget from './components/TradingViewWidget';
 import OrderForm from './components/OrderForm';
 import Login from './components/Login'; 
 import Register from './components/Register';
@@ -22,10 +22,12 @@ function App() {
 
   const location = useLocation();
 
+  console.log('App component rendered');
+
   return (
     <div className={`App ${theme}`}>
       {location.pathname !== '/login' && location.pathname !== '/register' && <Header toggleTheme={toggleTheme} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} 
-      {location.pathname !== '/login' && location.pathname !== '/register' && <div className="chart"><LandingPage /></div>}
+      {location.pathname !== '/login' && location.pathname !== '/register' && <div className="chart"><TradingViewWidget /></div>}
       {location.pathname !== '/login' && location.pathname !== '/register' && <div className="order-form"><OrderForm isLoggedIn={isLoggedIn} /></div>}
       <Routes>
         <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
